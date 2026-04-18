@@ -6,9 +6,6 @@
 
 SIGMA is an autonomous AI spy agent that takes a single clue (a username, image, or URL) and produces a full intelligence report — automatically. No manual Googling, no copy-pasting between tabs. The AI investigates, reasons, and writes the dossier on its own.
 
-**One-line pitch:**
-> Give SIGMA a username. It comes back with a classified intel brief.
-
 ---
 
 ## How it works (the simple version)

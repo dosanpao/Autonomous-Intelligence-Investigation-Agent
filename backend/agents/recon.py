@@ -20,8 +20,15 @@ def run_recon(username: str) -> dict:
     return report
 
 if __name__ == "__main__":
-    result = run_recon("dosanpao")
     import json
+    result = run_recon("I_Say_a_wut")
+    
+    # save to file for hypothesis agent
+    os.makedirs("backend/agents/JsonOutputs", exist_ok=True)
+    with open("backend/agents/JsonOutputs/recon.json", "w") as f:
+        json.dump(result, f, indent=2)
+    
     print(json.dumps(result, indent=2))
+    print("\nSaved to backend/agents/JsonOutputs/recon.json")
 
 # test with python3 -m backend.agents.recon

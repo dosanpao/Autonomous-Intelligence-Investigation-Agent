@@ -110,17 +110,23 @@ def run_hypothesis_agent(recon):
 # Main
 # -----------------------------
 def main():
-    # Ensure API key exists
     if not os.getenv("GEMINI_API_KEY"):
         raise ValueError("Missing GEMINI_API_KEY environment variable")
 
     recon = load_recon(RECON_PATH)
-
     hypothesis = run_hypothesis_agent(recon)
 
     print("\n================ SIGMA HYPOTHESIS ================\n")
     print(hypothesis)
     print("\n==================================================\n")
+
+    # save to file for brief agent
+    os.makedirs(os.path.join(BASE_DIR, "JsonOutputs"), exist_ok=True)
+    output_path = os.path.join(BASE_DIR, "JsonOutputs", "hypothesis.json")
+    with open(output_path, "w") as f:
+        f.write(hypothesis)
+
+    print(f"Saved to {output_path}")
 
 # -----------------------------
 # Entry Point

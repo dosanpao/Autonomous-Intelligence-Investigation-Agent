@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SIGMA Terminal</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- HEADER -->
+    <header class="header">
+      <h1>SIGMA</h1>
+      <p class="subtitle">Strategic Intelligence & Graph Metadata Analyzer</p>
+    </header>
+
+    <!-- CHAT -->
+    <main class="chat-container" id="chatContainer">
+      <div class="welcome">
+        <p>Enter a target to begin investigation.</p>
+        <span class="hint">username • image • url</span>
+      </div>
+    </main>
+
+    <!-- INPUT -->
+    <div class="input-container">
+
+      <button class="upload-btn" id="uploadBtn">+</button>
+      <input type="file" id="fileInput" accept="image/*" hidden />
+
+      <div class="input-wrapper">
+        <textarea
+          id="userInput"
+          placeholder="Type a username, URL, or describe an image..."
+          rows="1"
+        ></textarea>
+
+        <!-- IMAGE CHIP PREVIEW -->
+        <div id="imagePreview" class="image-preview"></div>
+      </div>
+
+      <button class="send-btn" id="sendBtn">→</button>
+
+    </div>
+
+  </div>
+
+  <script>
+    const uploadBtn = document.getElementById("uploadBtn");
+    const fileInput = document.getElementById("fileInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const userInput = document.getElementById("userInput");
+    const chatContainer = document.getElementById("chatContainer");
+    const imagePreview = document.getElementById("imagePreview");
+
+    let selectedFile = null;
+
+    uploadBtn.onclick = () => fileInput.click();
+
+    // ----------------------------
+    // IMAGE PREVIEW (CHATGPT STYLE CHIP)
+    // ----------------------------
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      selectedFile = file;
+      imagePreview.innerHTML = "";
+
+      const chip = document.createElement("div");
+      chip.className = "preview-chip";
+
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(file);
+
+      const name = document.createElement("span");
+      name.textContent = file.name;
+
+      const remove = document.createElement("button");
+      remove.textContent = "✕";
+
+      remove.onclick = () => {
+        selectedFile = null;
+        fileInput.value = "";
+        imagePreview.innerHTML = "";
+      };
+
+      chip.appendChild(img);
+      chip.appendChild(name);
+      chip.appendChild(remove);
+
+      imagePreview.appendChild(chip);
+    });
+
+    // ----------------------------
+    // SEND MESSAGE
+    // ----------------------------
+    sendBtn.onclick = async () => {
+      const text = userInput.value.trim();
+
+      if (!text && !selectedFile) return;
+
+      const welcome = document.querySelector(".welcome");
+      if (welcome) welcome.remove();
+
+      // USER MESSAGE
+      const userMsg = document.createElement("div");
+      userMsg.className = "message user";
+
+      if (text) {
+        const t = document.createElement("div");
+        t.textContent = text;
+        userMsg.appendChild(t);
+      }
+
+      if (selectedFile) {
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(selectedFile);
+        img.className = "chat-image";
+        userMsg.appendChild(img);
+      }
+
+      chatContainer.appendChild(userMsg);
+
+      // BACKEND REQUEST
+      const formData = new FormData();
+      formData.append("text", text);
+      if (selectedFile) formData.append("image", selectedFile);
+
+      const assistantMsg = document.createElement("div");
+      assistantMsg.className = "message assistant";
+      assistantMsg.textContent = "[SIGMA] Investigating target...";
+      chatContainer.appendChild(assistantMsg);
+
+      try {
+        const res = await fetch("/investigate", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+        assistantMsg.textContent = JSON.stringify(data, null, 2);
+
+      } catch (err) {
+        assistantMsg.textContent = "Backend error.";
+      }
+
+      // RESET
+      userInput.value = "";
+      selectedFile = null;
+      fileInput.value = "";
+      imagePreview.innerHTML = "";
+    };
+
+    userInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendBtn.click();
+      }
+    });
+  </script>
+
+</body>
+</html>

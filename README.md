@@ -72,7 +72,6 @@ There are three sequential AI calls, each powered by the Gemini API. The user se
 ---
 
 ### 3. Name inference from username
-Use the username pattern combined with any bio text found on discovered profiles to infer a likely real name. 
 
 ---
 

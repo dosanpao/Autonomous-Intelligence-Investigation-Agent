@@ -60,19 +60,6 @@
       "cat": "social"
     },
     {
-      "name": "247CTF",
-      "uri_check": "https://247ctf.com/progress/{account}",
-      "e_code": 200,
-      "e_string": "property=\"og:url\"",
-      "m_string": "<h1>Redirecting...</h1>",
-      "m_code": 302,
-      "known": [
-        "pottm",
-        "jusb3"
-      ],
-      "cat": "tech"
-    },
-    {
       "name": "247sports",
       "uri_check": "https://247sports.com/User/{account}/",
       "e_code": 200,

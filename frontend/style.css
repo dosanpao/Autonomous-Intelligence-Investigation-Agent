@@ -142,8 +142,6 @@ textarea:focus {
 .preview-chip img {
   width: 18px;
   height: 18px;
-  border-radius: 4px;
-  object-fit: cover;
 }
 
 .preview-chip button {
@@ -315,3 +313,13 @@ textarea:focus {
 .c-fill.high  { background: #00ffc8; }
 .c-fill.mid   { background: #ffc84a; }
 .c-fill.low   { background: #ff6b6b; }
+
+/* USER IMAGE THUMBNAIL IN CHAT */
+.user-thumb {
+  margin-top: 8px;
+  max-width: 140px;
+  max-height: 140px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid rgba(0, 255, 200, 0.3);
+}

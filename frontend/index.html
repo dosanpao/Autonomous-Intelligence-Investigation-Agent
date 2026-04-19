@@ -27,17 +27,17 @@
     <!-- INPUT -->
     <div class="input-container">
 
-      <button class="upload-btn" id="uploadBtn">+</button>
+      <button class="upload-btn" id="uploadBtn" title="Attach image">+</button>
       <input type="file" id="fileInput" accept="image/*" hidden />
 
       <div class="input-wrapper">
         <textarea
           id="userInput"
-          placeholder="Type a username, URL, or describe an image..."
+          placeholder="Username, https://url.com, or attach an image..."
           rows="1"
         ></textarea>
 
-        <!-- IMAGE CHIP PREVIEW -->
+        <div id="modeBadge" class="mode-badge" style="display:none;"></div>
         <div id="imagePreview" class="image-preview"></div>
       </div>
 
@@ -48,27 +48,57 @@
   </div>
 
   <script>
-    const uploadBtn = document.getElementById("uploadBtn");
-    const fileInput = document.getElementById("fileInput");
-    const sendBtn = document.getElementById("sendBtn");
-    const userInput = document.getElementById("userInput");
+    const uploadBtn     = document.getElementById("uploadBtn");
+    const fileInput     = document.getElementById("fileInput");
+    const sendBtn       = document.getElementById("sendBtn");
+    const userInput     = document.getElementById("userInput");
     const chatContainer = document.getElementById("chatContainer");
-    const imagePreview = document.getElementById("imagePreview");
+    const imagePreview  = document.getElementById("imagePreview");
+    const modeBadge     = document.getElementById("modeBadge");
 
     let selectedFile = null;
 
+    // ----------------------------
+    // Mode detection
+    // ----------------------------
+    function detectMode(text, hasImage) {
+      if (hasImage && !text.trim()) return "image";
+      if (text.trim().startsWith("http://") || text.trim().startsWith("https://")) return "url";
+      if (text.trim()) return "username";
+      return null;
+    }
+
+    const MODE_LABELS = { username: "👤 USERNAME", image: "🖼 IMAGE", url: "🌐 URL" };
+
+    function updateModeBadge() {
+      const mode = detectMode(userInput.value, !!selectedFile);
+      if (mode) {
+        modeBadge.textContent   = MODE_LABELS[mode];
+        modeBadge.className     = `mode-badge mode-${mode}`;
+        modeBadge.style.display = "inline-block";
+      } else {
+        modeBadge.style.display = "none";
+      }
+    }
+
+    userInput.addEventListener("input", updateModeBadge);
+
+    // ----------------------------
+    // Image Upload
+    // ----------------------------
     uploadBtn.onclick = () => fileInput.click();
 
     fileInput.addEventListener("change", () => {
       const file = fileInput.files[0];
       if (!file) return;
       selectedFile = file;
+
       imagePreview.innerHTML = "";
-      const chip = document.createElement("div");
+      const chip   = document.createElement("div");
       chip.className = "preview-chip";
-      const img = document.createElement("img");
-      img.src = URL.createObjectURL(file);
-      const name = document.createElement("span");
+      const img    = document.createElement("img");
+      img.src      = URL.createObjectURL(file);
+      const name   = document.createElement("span");
       name.textContent = file.name;
       const remove = document.createElement("button");
       remove.textContent = "✕";
@@ -76,16 +106,94 @@
         selectedFile = null;
         fileInput.value = "";
         imagePreview.innerHTML = "";
+        updateModeBadge();
       };
       chip.appendChild(img);
       chip.appendChild(name);
       chip.appendChild(remove);
       imagePreview.appendChild(chip);
+      updateModeBadge();
     });
 
+    // ----------------------------
+    // Confidence helpers
+    // ----------------------------
+    function confidenceColor(val) {
+      if (val >= 0.65) return "high";
+      if (val >= 0.35) return "mid";
+      return "low";
+    }
+
+    function confidenceCard(label, val) {
+      const pct   = (val * 100).toFixed(0);
+      const cls   = confidenceColor(val);
+      return `
+        <div class="confidence-item">
+          <div class="c-label">${label}</div>
+          <div class="c-value ${cls}">${pct}%</div>
+          <div class="c-bar"><div class="c-fill ${cls}" style="width:${pct}%"></div></div>
+        </div>`;
+    }
+
+    // ----------------------------
+    // Build final report HTML
+    // ----------------------------
+    function buildReport(r) {
+      const cm = r.confidence_metrics ?? {};
+      return `
+        <div class="report">
+          <div class="report-header">⬛ ${r.classification ?? "CLASSIFIED"}</div>
+
+          <div class="report-section">
+            <div class="section-title">Subject Profile</div>
+            <div><span class="label">Name</span>${r.subject_profile?.likely_name ?? "UNKNOWN"}</div>
+            <div><span class="label">Username</span>${r.subject_profile?.username ?? "—"}</div>
+            <div class="summary">${r.subject_profile?.summary ?? ""}</div>
+          </div>
+
+          <div class="report-section">
+            <div class="section-title">Digital Footprint</div>
+            <div><span class="label">Confirmed</span>${(r.digital_footprint?.platforms_confirmed ?? []).join(", ") || "None"}</div>
+            <div><span class="label">Possible</span>${(r.digital_footprint?.platforms_possible ?? []).join(", ") || "None"}</div>
+            <div class="summary">${r.digital_footprint?.summary ?? ""}</div>
+          </div>
+
+          <div class="report-section">
+            <div class="section-title">Location Estimate</div>
+            <div><span class="label">Region</span>${r.location_estimate?.region ?? "UNKNOWN"}</div>
+            <div class="summary">${r.location_estimate?.reasoning ?? ""}</div>
+          </div>
+
+          <div class="report-section">
+            <div class="section-title">Behavioral Analysis</div>
+            <div class="summary">${r.behavioral_analysis?.summary ?? ""}</div>
+          </div>
+
+          <div class="report-section">
+            <div class="section-title">Confidence Metrics</div>
+            <div class="confidence-grid">
+              ${confidenceCard("Identity",   cm.identity   ?? 0)}
+              ${confidenceCard("Location",   cm.location   ?? 0)}
+              ${confidenceCard("Occupation", cm.occupation ?? 0)}
+              ${confidenceCard("Overall",    cm.overall    ?? 0)}
+            </div>
+          </div>
+
+          <div class="report-section analyst">
+            <div class="section-title">Analyst Note</div>
+            <div class="summary">${r.analyst_note ?? ""}</div>
+          </div>
+        </div>`;
+    }
+
+    // ----------------------------
+    // Send Investigation
+    // ----------------------------
     sendBtn.onclick = async () => {
       const text = userInput.value.trim();
       if (!text && !selectedFile) return;
+
+      const mode = detectMode(text, !!selectedFile);
 
       const welcome = document.querySelector(".welcome");
       if (welcome) welcome.remove();
@@ -93,89 +201,66 @@
       const userMsg = document.createElement("div");
       userMsg.className = "message user";
       const t = document.createElement("div");
-      t.textContent = text;
+      t.textContent = text || `[Image: ${selectedFile?.name}]`;
       userMsg.appendChild(t);
+
+      if (selectedFile) {
+        const thumb = document.createElement("img");
+        thumb.src = URL.createObjectURL(selectedFile);
+        thumb.className = "user-thumb";
+        userMsg.appendChild(thumb);
+      }
+
       chatContainer.appendChild(userMsg);
 
       const agentMsg = document.createElement("div");
       agentMsg.className = "message assistant";
-      agentMsg.textContent = "[SIGMA] Starting investigation...";
+      agentMsg.textContent = `[SIGMA] Starting ${mode} investigation...`;
       chatContainer.appendChild(agentMsg);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
 
       const formData = new FormData();
       formData.append("text", text);
       if (selectedFile) formData.append("image", selectedFile);
 
+      userInput.value        = "";
+      selectedFile           = null;
+      fileInput.value        = "";
+      imagePreview.innerHTML = "";
+      modeBadge.style.display = "none";
+
       try {
-        const res = await fetch("/investigate", { method: "POST", body: formData });
-        const reader = res.body.getReader();
+        const res     = await fetch("/investigate", { method: "POST", body: formData });
+        const reader  = res.body.getReader();
         const decoder = new TextDecoder();
+        let buffer    = "";
 
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
 
-          const chunk = decoder.decode(value);
-          const lines = chunk.split("\n").filter(l => l.startsWith("data:"));
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n\n");
+          buffer = lines.pop();
 
           for (const line of lines) {
-            const data = JSON.parse(line.replace("data: ", ""));
+            if (!line.startsWith("data:")) continue;
+            const data = JSON.parse(line.replace(/^data:\s*/, ""));
 
             if (data.agent === "ERROR") {
               agentMsg.textContent += `\n[ERROR] ${data.message}`;
             } else if (data.agent !== "COMPLETE") {
               agentMsg.textContent += `\n[${data.agent}] ${data.message}`;
             } else {
-              const report = data.report;
-              agentMsg.innerHTML = `
-                <div class="report">
-                  <div class="report-header">⬛ ${report.classification}</div>
-                  <div class="report-section">
-                    <div class="section-title">SUBJECT PROFILE</div>
-                    <div><span class="label">Name:</span> ${report.subject_profile.likely_name || "UNKNOWN"}</div>
-                    <div><span class="label">Username:</span> ${report.subject_profile.username}</div>
-                    <div class="summary">${report.subject_profile.summary}</div>
-                  </div>
-                  <div class="report-section">
-                    <div class="section-title">DIGITAL FOOTPRINT</div>
-                    <div><span class="label">Confirmed:</span> ${report.digital_footprint.platforms_confirmed.join(", ") || "none"}</div>
-                    <div class="summary">${report.digital_footprint.summary}</div>
-                  </div>
-                  <div class="report-section">
-                    <div class="section-title">LOCATION ESTIMATE</div>
-                    <div><span class="label">Region:</span> ${report.location_estimate.region}</div>
-                    <div><span class="label">Confidence:</span> ${(report.location_estimate.confidence * 100).toFixed(0)}%</div>
-                    <div class="summary">${report.location_estimate.reasoning}</div>
-                  </div>
-                  <div class="report-section">
-                    <div class="section-title">BEHAVIORAL ANALYSIS</div>
-                    <div class="summary">${report.behavioral_analysis.summary}</div>
-                  </div>
-                  <div class="report-section">
-                    <div class="section-title">CONFIDENCE METRICS</div>
-                    <div><span class="label">Identity:</span> ${(report.confidence_metrics.identity * 100).toFixed(0)}%</div>
-                    <div><span class="label">Location:</span> ${(report.confidence_metrics.location * 100).toFixed(0)}%</div>
-                    <div><span class="label">Occupation:</span> ${(report.confidence_metrics.occupation * 100).toFixed(0)}%</div>
-                    <div><span class="label">Overall:</span> ${(report.confidence_metrics.overall * 100).toFixed(0)}%</div>
-                  </div>
-                  <div class="report-section analyst">
-                    <div class="section-title">ANALYST NOTE</div>
-                    <div class="summary">${report.analyst_note}</div>
-                  </div>
-                </div>
-              `;
+              agentMsg.innerHTML = buildReport(data.report);
             }
+
             chatContainer.scrollTop = chatContainer.scrollHeight;
           }
         }
       } catch (err) {
-        agentMsg.textContent = "Backend error: " + err.message;
+        agentMsg.textContent = "[ERROR] Backend unreachable: " + err.message;
       }
-
-      userInput.value = "";
-      selectedFile = null;
-      fileInput.value = "";
-      imagePreview.innerHTML = "";
     };
 
     userInput.addEventListener("keydown", (e) => {

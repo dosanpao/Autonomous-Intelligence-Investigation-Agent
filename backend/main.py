@@ -37,7 +37,8 @@ def investigate():
 
     def generate():
         # STEP 1 - RECON
-        yield f"data: {json.dumps({'agent': 'RECON', 'message': 'Scanning platforms...'})}\n\n"
+        yield f"data: {json.dumps({'agent': 'AGENT RECON', 'message': 'Initializing target acquisition...'})}\n\n"
+        yield f"data: {json.dumps({'agent': 'AGENT RECON', 'message': 'Scanning global platform database...'})}\n\n"
         recon = run_recon(text)
 
         os.makedirs(os.path.join(os.path.dirname(__file__), "agents/JsonOutputs"), exist_ok=True)
@@ -45,10 +46,14 @@ def investigate():
             json.dump(recon, f, indent=2)
 
         found = len(recon.get("accounts_found", []))
-        yield f"data: {json.dumps({'agent': 'RECON', 'message': f'Found {found} platform(s). Building profile...'})}\n\n"
+        yield f"data: {json.dumps({'agent': 'AGENT RECON', 'message': f'Platform sweep complete — {found} account(s) identified.'})}\n\n"
+        yield f"data: {json.dumps({'agent': 'AGENT RECON', 'message': 'Extracting profile metadata and digital artifacts...'})}\n\n"
+        yield f"data: {json.dumps({'agent': 'AGENT RECON', 'message': 'Recon package sealed. Passing to hypothesis engine.'})}\n\n"
 
         # STEP 2 - HYPOTHESIS
-        yield f"data: {json.dumps({'agent': 'HYPOTHESIS', 'message': 'Analyzing patterns and generating theories...'})}\n\n"
+        yield f"data: {json.dumps({'agent': 'AGENT HYPOTHESIS', 'message': 'Receiving intelligence package...'})}\n\n"
+        yield f"data: {json.dumps({'agent': 'AGENT HYPOTHESIS', 'message': 'Cross-referencing platform data for behavioral patterns...'})}\n\n"
+        yield f"data: {json.dumps({'agent': 'AGENT HYPOTHESIS', 'message': 'Running probabilistic identity analysis...'})}\n\n"
         hypothesis_raw = run_hypothesis_agent({**recon, "username": text})
 
         clean = hypothesis_raw.strip()
@@ -62,10 +67,13 @@ def investigate():
             f.write(clean)
 
         hypothesis = json.loads(clean)
-        yield f"data: {json.dumps({'agent': 'HYPOTHESIS', 'message': 'Hypotheses generated. Writing brief...'})}\n\n"
+        yield f"data: {json.dumps({'agent': 'AGENT HYPOTHESIS', 'message': 'Confidence scores calculated. Hypotheses locked in.'})}\n\n"
+        yield f"data: {json.dumps({'agent': 'AGENT HYPOTHESIS', 'message': 'Forwarding intelligence package to brief writer...'})}\n\n"
 
         # STEP 3 - BRIEF
-        yield f"data: {json.dumps({'agent': 'BRIEF', 'message': 'Compiling intelligence dossier...'})}\n\n"
+        yield f"data: {json.dumps({'agent': 'AGENT BRIEF', 'message': 'Receiving hypothesis package...'})}\n\n"
+        yield f"data: {json.dumps({'agent': 'AGENT BRIEF', 'message': 'Structuring classified intelligence dossier...'})}\n\n"
+        yield f"data: {json.dumps({'agent': 'AGENT BRIEF', 'message': 'Applying redaction protocols and confidence metrics...'})}\n\n"
         brief_raw = run_brief_agent(hypothesis)
 
         clean_brief = brief_raw.strip()
@@ -79,7 +87,8 @@ def investigate():
             f.write(clean_brief)
 
         brief = json.loads(clean_brief)
-        yield f"data: {json.dumps({'agent': 'COMPLETE', 'message': 'Report ready.', 'report': brief})}\n\n"
+        yield f"data: {json.dumps({'agent': 'AGENT BRIEF', 'message': 'Dossier compiled. Classification stamp applied.'})}\n\n"
+        yield f"data: {json.dumps({'agent': 'COMPLETE', 'message': 'Intel report ready.', 'report': brief})}\n\n"
 
     return Response(generate(), mimetype="text/event-stream")
 

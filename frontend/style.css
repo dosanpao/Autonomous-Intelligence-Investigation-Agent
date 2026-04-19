@@ -172,7 +172,20 @@ body {
   display: none;
 }
 
-.sidebar-toggle:hover { color: var(--accent); }
+.header-right {
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#orbCanvas {
+  display: block;
+  cursor: default;
+  border-radius: 50%;
+}
+
+
 
 .header-center {
   text-align: center;

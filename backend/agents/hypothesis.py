@@ -8,6 +8,9 @@ load_dotenv()
 BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
 RECON_PATH = os.path.join(BASE_DIR, "JsonOutputs", "recon.json")
 
+# -----------------------------
+# Gemini Client (NEW SDK)
+# -----------------------------
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 def load_recon(path):
@@ -19,7 +22,6 @@ def load_recon(path):
 # -----------------------------
 def format_recon_for_prompt(recon):
     mode = recon.get("mode", "username")
-
     if mode == "url":
         return _format_url_prompt(recon)
     elif mode == "image":

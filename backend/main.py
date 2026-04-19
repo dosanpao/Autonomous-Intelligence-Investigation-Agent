@@ -46,7 +46,7 @@ def investigate():
         image_file.save(tmp.name)
         image_path = tmp.name
 
-    # Detect mode upfront for status messages
+    # Detect mode
     if image_path and not text:
         mode = "image"
     elif text.startswith("http://") or text.startswith("https://"):
@@ -54,24 +54,18 @@ def investigate():
     else:
         mode = "username"
 
-    MODE_MESSAGES = {
-        "image":    "Analyzing image...",
-        "url":      "Fetching and analyzing URL...",
-        "username": "Scanning platforms...",
-    }
-
     def generate():
         try:
             os.makedirs(JSON_DIR, exist_ok=True)
 
             # STEP 1 - RECON
-            yield f"data: {json.dumps({'agent': 'RECON', 'message': MODE_MESSAGES[mode]})}\n\n"
+            yield f"data: {json.dumps({'agent': 'AGENT RECON', 'message': 'Initializing target acquisition...'})}\n\n"
+            yield f"data: {json.dumps({'agent': 'AGENT RECON', 'message': 'Scanning global platform database...'})}\n\n"
             recon = run_recon(text, image_input=image_path)
 
             with open(os.path.join(JSON_DIR, "recon.json"), "w") as f:
                 json.dump(recon, f, indent=2)
 
-            # Mode-specific status message
             if mode == "image":
                 img_ok = recon.get("image_analysis") and "error" not in recon["image_analysis"]
                 status = "Image analyzed. Generating intelligence report..." if img_ok else "Image analysis failed."
@@ -79,14 +73,17 @@ def investigate():
                 url_ok = recon.get("url_analysis") and "error" not in recon["url_analysis"]
                 status = "URL analyzed. Building intelligence profile..." if url_ok else "URL analysis failed."
             else:
-                found   = len(recon.get("accounts_found", []))
-                img_msg = " Image analyzed." if recon.get("image_analysis") and "error" not in recon["image_analysis"] else ""
-                status  = f"Found {found} platform(s). Building profile...{img_msg}"
+                found  = len(recon.get("accounts_found", []))
+                status = f"Platform sweep complete — {found} account(s) identified."
 
-            yield f"data: {json.dumps({'agent': 'RECON', 'message': status})}\n\n"
+            yield f"data: {json.dumps({'agent': 'AGENT RECON', 'message': status})}\n\n"
+            yield f"data: {json.dumps({'agent': 'AGENT RECON', 'message': 'Extracting profile metadata and digital artifacts...'})}\n\n"
+            yield f"data: {json.dumps({'agent': 'AGENT RECON', 'message': 'Recon package sealed. Passing to hypothesis engine.'})}\n\n"
 
             # STEP 2 - HYPOTHESIS
-            yield f"data: {json.dumps({'agent': 'HYPOTHESIS', 'message': 'Analyzing patterns and generating theories...'})}\n\n"
+            yield f"data: {json.dumps({'agent': 'AGENT HYPOTHESIS', 'message': 'Receiving intelligence package...'})}\n\n"
+            yield f"data: {json.dumps({'agent': 'AGENT HYPOTHESIS', 'message': 'Cross-referencing platform data for behavioral patterns...'})}\n\n"
+            yield f"data: {json.dumps({'agent': 'AGENT HYPOTHESIS', 'message': 'Running probabilistic identity analysis...'})}\n\n"
             hypothesis_raw = run_hypothesis_agent({**recon, "username": text})
 
             clean = hypothesis_raw.strip()
@@ -100,10 +97,13 @@ def investigate():
                 f.write(clean)
 
             hypothesis = json.loads(clean)
-            yield f"data: {json.dumps({'agent': 'HYPOTHESIS', 'message': 'Hypotheses generated. Writing brief...'})}\n\n"
+            yield f"data: {json.dumps({'agent': 'AGENT HYPOTHESIS', 'message': 'Confidence scores calculated. Hypotheses locked in.'})}\n\n"
+            yield f"data: {json.dumps({'agent': 'AGENT HYPOTHESIS', 'message': 'Forwarding intelligence package to brief writer...'})}\n\n"
 
             # STEP 3 - BRIEF
-            yield f"data: {json.dumps({'agent': 'BRIEF', 'message': 'Compiling intelligence dossier...'})}\n\n"
+            yield f"data: {json.dumps({'agent': 'AGENT BRIEF', 'message': 'Receiving hypothesis package...'})}\n\n"
+            yield f"data: {json.dumps({'agent': 'AGENT BRIEF', 'message': 'Structuring classified intelligence dossier...'})}\n\n"
+            yield f"data: {json.dumps({'agent': 'AGENT BRIEF', 'message': 'Applying redaction protocols and confidence metrics...'})}\n\n"
             brief_raw = run_brief_agent(hypothesis)
 
             clean_brief = brief_raw.strip()
@@ -117,7 +117,8 @@ def investigate():
                 f.write(clean_brief)
 
             brief = json.loads(clean_brief)
-            yield f"data: {json.dumps({'agent': 'COMPLETE', 'message': 'Report ready.', 'report': brief})}\n\n"
+            yield f"data: {json.dumps({'agent': 'AGENT BRIEF', 'message': 'Dossier compiled. Classification stamp applied.'})}\n\n"
+            yield f"data: {json.dumps({'agent': 'COMPLETE', 'message': 'Intel report ready.', 'report': brief})}\n\n"
 
         except Exception as e:
             yield f"data: {json.dumps({'agent': 'ERROR', 'message': str(e)})}\n\n"

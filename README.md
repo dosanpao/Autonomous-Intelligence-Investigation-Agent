@@ -84,24 +84,24 @@ There are three sequential AI calls, each powered by the Gemini API. The user se
 ```
 sigma/
 ├── backend/
-│   ├── main.py              # Flask/FastAPI app, SSE endpoint
+│   ├── main.py              
 │   ├── agents/
-│   │   ├── recon.py         # Recon agent — Gemini call #1
-│   │   ├── hypothesis.py    # Hypothesis agent — Gemini call #2
-│   │   └── brief.py         # Brief generator — Gemini call #3
+│   │   ├── recon.py         
+│   │   ├── hypothesis.py    
+│   │   └── brief.py         
 │   └── tools/
-│       ├── username_lookup.py   # Exact match via whatsmyname dataset
-│       ├── similar_username.py  # Variant generation + fuzzy scoring (rapidfuzz)
-│       ├── name_inference.py    # Infers real name from username + bio text
-│       └── image_analysis.py    # Wraps Gemini Vision
+│       ├── username_lookup.py   
+│       ├── similar_username.py  
+│       ├── name_inference.py    
+│       └── image_analysis.py    
 ├── frontend/
-│   ├── index.html           # Input form + live dashboard
-│   ├── report.html          # Final styled dossier view
-│   └── style.css            # Spy terminal aesthetic
+│   ├── index.html           
+│   ├── report.html          
+│   └── style.css            
 ├── data/
-│   └── whatsmyname.json     # Username platform dataset (downloaded from GitHub)
-├── .env                     # GEMINI_API_KEY goes here
-└── README.md                # This file
+│   └── whatsmyname.json     
+├── .env                     
+└── README.md                
 ```
 
 ---

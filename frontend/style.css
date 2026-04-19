@@ -78,6 +78,7 @@ body {
   margin-right: auto;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  max-width: 90%;
 }
 
 /* CHAT IMAGE */
@@ -174,43 +175,143 @@ textarea:focus {
   cursor: pointer;
 }
 
+/* MODE BADGE */
+.mode-badge {
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 3px;
+  font-family: monospace;
+  margin-top: 5px;
+  width: fit-content;
+}
+.mode-username { background: #1a3a1a; color: #00ff41; border: 1px solid #00ff41; }
+.mode-image    { background: #1a1a3a; color: #4a9eff; border: 1px solid #4a9eff; }
+.mode-url      { background: #3a1a1a; color: #ff6b35; border: 1px solid #ff6b35; }
+
+/* ============================================
+   REPORT STYLES
+   ============================================ */
+
 .report {
-  font-size: 13px;
-  line-height: 1.6;
+  font-size: 15px;
+  line-height: 1.7;
+  padding: 4px 0;
 }
 
+/* TOP CLASSIFICATION BANNER */
 .report-header {
+  text-align: center;
   color: #ff4444;
   font-weight: bold;
-  letter-spacing: 2px;
-  margin-bottom: 16px;
-  font-size: 14px;
+  letter-spacing: 4px;
+  font-size: 13px;
+  padding: 10px 0;
+  margin-bottom: 20px;
+  border-top: 1px solid rgba(255, 68, 68, 0.4);
+  border-bottom: 1px solid rgba(255, 68, 68, 0.4);
+  background: rgba(255, 68, 68, 0.05);
 }
 
+/* EACH SECTION CARD */
 .report-section {
-  border-left: 2px solid rgba(0, 255, 200, 0.3);
-  padding-left: 12px;
-  margin-bottom: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 255, 200, 0.12);
+  border-left: 3px solid rgba(0, 255, 200, 0.5);
+  border-radius: 6px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
 }
 
 .report-section.analyst {
-  border-left-color: rgba(255, 200, 0, 0.4);
+  border-left-color: rgba(255, 200, 0, 0.6);
+  background: rgba(255, 200, 0, 0.03);
 }
 
+/* SECTION HEADER */
 .section-title {
   color: #00ffc8;
-  font-size: 11px;
-  letter-spacing: 3px;
-  margin-bottom: 6px;
-  opacity: 0.8;
+  font-size: 10px;
+  letter-spacing: 4px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  opacity: 0.9;
+  text-transform: uppercase;
 }
 
+/* FIELD ROWS */
+.report-section > div {
+  margin-bottom: 6px;
+  font-size: 15px;
+}
+
+/* FIELD LABELS */
 .label {
   color: #00ffc8;
-  opacity: 0.7;
+  opacity: 0.75;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-right: 6px;
 }
 
+/* BODY TEXT */
 .summary {
-  opacity: 0.85;
-  margin-top: 4px;
+  color: #c8dff5;
+  font-size: 15px;
+  line-height: 1.75;
+  margin-top: 8px;
+  opacity: 0.95;
 }
+
+/* CONFIDENCE METRICS GRID */
+.confidence-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.confidence-item {
+  background: rgba(0, 255, 200, 0.05);
+  border: 1px solid rgba(0, 255, 200, 0.15);
+  border-radius: 5px;
+  padding: 10px 14px;
+}
+
+.confidence-item .c-label {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #00ffc8;
+  opacity: 0.7;
+  text-transform: uppercase;
+}
+
+.confidence-item .c-value {
+  font-size: 22px;
+  font-weight: bold;
+  color: #00ffc8;
+  margin-top: 2px;
+}
+
+.confidence-item .c-bar {
+  height: 3px;
+  background: rgba(0, 255, 200, 0.15);
+  border-radius: 2px;
+  margin-top: 6px;
+  overflow: hidden;
+}
+
+.confidence-item .c-fill {
+  height: 100%;
+  background: #00ffc8;
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
+/* HIGH / MED / LOW color coding */
+.c-value.high { color: #00ffc8; }
+.c-value.mid  { color: #ffc84a; }
+.c-value.low  { color: #ff6b6b; }
+.c-fill.high  { background: #00ffc8; }
+.c-fill.mid   { background: #ffc84a; }
+.c-fill.low   { background: #ff6b6b; }

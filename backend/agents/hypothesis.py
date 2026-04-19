@@ -116,15 +116,22 @@ def main():
     recon = load_recon(RECON_PATH)
     hypothesis = run_hypothesis_agent(recon)
 
+    # strip markdown formatting if Gemini adds it
+    clean = hypothesis.strip()
+    if clean.startswith("```"):
+        clean = clean.split("\n", 1)[1]  # remove first line
+    if clean.endswith("```"):
+        clean = clean.rsplit("```", 1)[0]  # remove last ```
+    clean = clean.strip()
+
     print("\n================ SIGMA HYPOTHESIS ================\n")
-    print(hypothesis)
+    print(clean)
     print("\n==================================================\n")
 
-    # save to file for brief agent
     os.makedirs(os.path.join(BASE_DIR, "JsonOutputs"), exist_ok=True)
     output_path = os.path.join(BASE_DIR, "JsonOutputs", "hypothesis.json")
     with open(output_path, "w") as f:
-        f.write(hypothesis)
+        f.write(clean)
 
     print(f"Saved to {output_path}")
 

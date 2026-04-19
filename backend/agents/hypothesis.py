@@ -12,7 +12,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 RECON_PATH = os.path.join(BASE_DIR, "JsonOutputs", "recon.json")
 
 # -----------------------------
-# Gemini Client (NEW SDK)
+# Gemini Client
 # -----------------------------
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
@@ -27,6 +27,21 @@ def load_recon(path):
 # Format Prompt
 # -----------------------------
 def format_recon_for_prompt(recon):
+    image_section = ""
+    image_data = recon.get("image_analysis")
+    if image_data and "error" not in image_data:
+        image_section = f"""
+Image Analysis:
+  Location Clues:    {json.dumps(image_data.get("location_clues"), indent=4)}
+  Time Clues:        {json.dumps(image_data.get("time_clues"), indent=4)}
+  Subject Clues:     {json.dumps(image_data.get("subject_clues"), indent=4)}
+  Device Clues:      {json.dumps(image_data.get("device_and_metadata_clues"), indent=4)}
+  Visual Summary:    {image_data.get("visual_description", "")}
+  Intel Summary:     {image_data.get("intelligence_summary", "")}
+"""
+    else:
+        image_section = "Image Analysis: None provided."
+
     return f"""
 You are SIGMA, an OSINT intelligence hypothesis engine.
 
@@ -52,16 +67,17 @@ Similar Usernames:
 Name Inference:
 {json.dumps(recon.get("name_inference"), indent=2)}
 
-Image Analysis:
-{json.dumps(recon.get("image_analysis"), indent=2)}
+{image_section}
 
 Metadata:
 {json.dumps(recon.get("metadata"), indent=2)}
 
 === TASK ===
-Generate structured intelligence hypotheses:
+Generate structured intelligence hypotheses based on ALL available evidence above,
+including image analysis if present. Location hypotheses should incorporate image
+location clues when available.
 
-Return JSON in this format:
+Return JSON in this exact format:
 
 {{
   "identity_hypothesis": {{
@@ -107,7 +123,7 @@ def run_hypothesis_agent(recon):
     return response.text
 
 # -----------------------------
-# Main
+# Main (standalone test)
 # -----------------------------
 def main():
     if not os.getenv("GEMINI_API_KEY"):
@@ -116,12 +132,11 @@ def main():
     recon = load_recon(RECON_PATH)
     hypothesis = run_hypothesis_agent(recon)
 
-    # strip markdown formatting if Gemini adds it
     clean = hypothesis.strip()
     if clean.startswith("```"):
-        clean = clean.split("\n", 1)[1]  # remove first line
+        clean = clean.split("\n", 1)[1]
     if clean.endswith("```"):
-        clean = clean.rsplit("```", 1)[0]  # remove last ```
+        clean = clean.rsplit("```", 1)[0]
     clean = clean.strip()
 
     print("\n================ SIGMA HYPOTHESIS ================\n")
@@ -135,11 +150,7 @@ def main():
 
     print(f"Saved to {output_path}")
 
-# # -----------------------------
-# # Entry Point
-# # -----------------------------
 # if __name__ == "__main__":
 #     main()
-
 
 # python3 -m backend.agents.hypothesis

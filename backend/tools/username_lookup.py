@@ -9,8 +9,11 @@ from dotenv import load_dotenv
 load_dotenv()
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-def load_wmn_data(path="data/whatsmyname.json"):
-    with open(path, "r") as f:
+# Absolute path — works regardless of where you run the server from
+WMN_PATH = os.path.join(os.path.dirname(__file__), "../../data/whatsmyname.json")
+
+def load_wmn_data(path=None):
+    with open(path or WMN_PATH, "r") as f:
         return json.load(f)
 
 def scrape_profile(url: str, username: str) -> dict:

@@ -277,8 +277,24 @@
 
       const row = document.createElement("div");
       row.className = "msg-row user-row";
+
+      const msg = document.createElement("div");
+      msg.className = "message user";
+
+      // text
+      const textEl = document.createElement("div");
+      textEl.textContent = text;
+      msg.appendChild(textEl);
+
+      // ✅ image thumbnail
+      if (selectedFile) {
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(selectedFile);
+        img.className = "chat-thumb";
+        msg.appendChild(img);
+      }
+
       row.innerHTML = `
-        <div class="message user">${text}</div>
         <div class="avatar user-avatar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
             <circle cx="12" cy="8" r="4"/>
@@ -286,13 +302,20 @@
           </svg>
         </div>
       `;
+
+      row.insertBefore(msg, row.firstChild);
+
       chatContainer.appendChild(row);
       chatContainer.scrollTop = chatContainer.scrollHeight;
 
       if (save && currentSessionId) {
         const s = sessions.find(x => x.id === currentSessionId);
-        if (s) { s.messages.push({ role: "user", text }); saveSessions(); }
+        if (s) {
+          s.messages.push({ role: "user", text });
+          saveSessions();
+        }
       }
+
       return row;
     }
 

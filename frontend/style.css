@@ -574,3 +574,13 @@ textarea::placeholder { color: var(--text-dim); }
 .c-fill.high  { background: #00ffc8; }
 .c-fill.mid   { background: #ffc84a; }
 .c-fill.low   { background: #ff6b6b; }
+
+.chat-thumb {
+  display: block;
+  margin-top: 8px;
+  max-width: 160px;
+  max-height: 120px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid rgba(0,255,200,0.25);
+}

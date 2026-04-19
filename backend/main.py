@@ -12,7 +12,6 @@ from agents.brief import run_brief_agent
 
 app = Flask(__name__)
 
-# Absolute paths — immune to cwd issues
 BASE_DIR      = os.path.dirname(os.path.abspath(__file__))
 FRONTEND_PATH = os.path.abspath(os.path.join(BASE_DIR, "../frontend"))
 JSON_DIR      = os.path.join(BASE_DIR, "agents", "JsonOutputs")
@@ -39,7 +38,6 @@ def ping():
 def investigate():
     text = request.form.get("text", "").strip()
 
-    # Handle optional image upload
     image_path = None
     image_file = request.files.get("image")
     if image_file and image_file.filename:
@@ -48,29 +46,44 @@ def investigate():
         image_file.save(tmp.name)
         image_path = tmp.name
 
-    # Image-only mode: image provided but no username text
-    image_only = bool(image_path and not text)
+    # Detect mode upfront for status messages
+    if image_path and not text:
+        mode = "image"
+    elif text.startswith("http://") or text.startswith("https://"):
+        mode = "url"
+    else:
+        mode = "username"
+
+    MODE_MESSAGES = {
+        "image":    "Analyzing image...",
+        "url":      "Fetching and analyzing URL...",
+        "username": "Scanning platforms...",
+    }
 
     def generate():
         try:
             os.makedirs(JSON_DIR, exist_ok=True)
 
             # STEP 1 - RECON
-            recon_msg = "Analyzing image..." if image_only else "Scanning platforms..."
-            yield f"data: {json.dumps({'agent': 'RECON', 'message': recon_msg})}\n\n"
+            yield f"data: {json.dumps({'agent': 'RECON', 'message': MODE_MESSAGES[mode]})}\n\n"
             recon = run_recon(text, image_input=image_path)
 
             with open(os.path.join(JSON_DIR, "recon.json"), "w") as f:
                 json.dump(recon, f, indent=2)
 
-            if image_only:
+            # Mode-specific status message
+            if mode == "image":
                 img_ok = recon.get("image_analysis") and "error" not in recon["image_analysis"]
                 status = "Image analyzed. Generating intelligence report..." if img_ok else "Image analysis failed."
-                yield f"data: {json.dumps({'agent': 'RECON', 'message': status})}\n\n"
+            elif mode == "url":
+                url_ok = recon.get("url_analysis") and "error" not in recon["url_analysis"]
+                status = "URL analyzed. Building intelligence profile..." if url_ok else "URL analysis failed."
             else:
                 found   = len(recon.get("accounts_found", []))
                 img_msg = " Image analyzed." if recon.get("image_analysis") and "error" not in recon["image_analysis"] else ""
-                yield f"data: {json.dumps({'agent': 'RECON', 'message': f'Found {found} platform(s). Building profile...{img_msg}'})}\n\n"
+                status  = f"Found {found} platform(s). Building profile...{img_msg}"
+
+            yield f"data: {json.dumps({'agent': 'RECON', 'message': status})}\n\n"
 
             # STEP 2 - HYPOTHESIS
             yield f"data: {json.dumps({'agent': 'HYPOTHESIS', 'message': 'Analyzing patterns and generating theories...'})}\n\n"

@@ -135,11 +135,11 @@ def main():
 
     print(f"Saved to {output_path}")
 
-# -----------------------------
-# Entry Point
-# -----------------------------
-if __name__ == "__main__":
-    main()
+# # -----------------------------
+# # Entry Point
+# # -----------------------------
+# if __name__ == "__main__":
+#     main()
 
 
 # python3 -m backend.agents.hypothesis

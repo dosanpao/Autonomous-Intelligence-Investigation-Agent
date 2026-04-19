@@ -1,21 +1,25 @@
-from flask import Flask, request, jsonify, send_from_directory, Response
+from flask import Flask, request, send_from_directory, Response
 import os
 import json
 import sys
+import tempfile
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from agents.recon import run_recon
-from agents.hypothesis import run_hypothesis_agent, format_recon_for_prompt
+from agents.hypothesis import run_hypothesis_agent
 from agents.brief import run_brief_agent
 
 app = Flask(__name__)
 
+# Absolute paths — immune to cwd issues
+BASE_DIR      = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_PATH = os.path.abspath(os.path.join(BASE_DIR, "../frontend"))
+JSON_DIR      = os.path.join(BASE_DIR, "agents", "JsonOutputs")
+
 # ----------------------------
 # Serve Frontend
 # ----------------------------
-FRONTEND_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../frontend"))
-
 @app.route("/")
 def index():
     return send_from_directory(FRONTEND_PATH, "index.html")
@@ -35,51 +39,79 @@ def ping():
 def investigate():
     text = request.form.get("text", "").strip()
 
+    # Handle optional image upload
+    image_path = None
+    image_file = request.files.get("image")
+    if image_file and image_file.filename:
+        suffix = os.path.splitext(image_file.filename)[1] or ".jpg"
+        tmp = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+        image_file.save(tmp.name)
+        image_path = tmp.name
+
+    # Image-only mode: image provided but no username text
+    image_only = bool(image_path and not text)
+
     def generate():
-        # STEP 1 - RECON
-        yield f"data: {json.dumps({'agent': 'RECON', 'message': 'Scanning platforms...'})}\n\n"
-        recon = run_recon(text)
+        try:
+            os.makedirs(JSON_DIR, exist_ok=True)
 
-        os.makedirs(os.path.join(os.path.dirname(__file__), "agents/JsonOutputs"), exist_ok=True)
-        with open("backend/agents/JsonOutputs/recon.json", "w") as f:
-            json.dump(recon, f, indent=2)
+            # STEP 1 - RECON
+            recon_msg = "Analyzing image..." if image_only else "Scanning platforms..."
+            yield f"data: {json.dumps({'agent': 'RECON', 'message': recon_msg})}\n\n"
+            recon = run_recon(text, image_input=image_path)
 
-        found = len(recon.get("accounts_found", []))
-        yield f"data: {json.dumps({'agent': 'RECON', 'message': f'Found {found} platform(s). Building profile...'})}\n\n"
+            with open(os.path.join(JSON_DIR, "recon.json"), "w") as f:
+                json.dump(recon, f, indent=2)
 
-        # STEP 2 - HYPOTHESIS
-        yield f"data: {json.dumps({'agent': 'HYPOTHESIS', 'message': 'Analyzing patterns and generating theories...'})}\n\n"
-        hypothesis_raw = run_hypothesis_agent({**recon, "username": text})
+            if image_only:
+                img_ok = recon.get("image_analysis") and "error" not in recon["image_analysis"]
+                status = "Image analyzed. Generating intelligence report..." if img_ok else "Image analysis failed."
+                yield f"data: {json.dumps({'agent': 'RECON', 'message': status})}\n\n"
+            else:
+                found   = len(recon.get("accounts_found", []))
+                img_msg = " Image analyzed." if recon.get("image_analysis") and "error" not in recon["image_analysis"] else ""
+                yield f"data: {json.dumps({'agent': 'RECON', 'message': f'Found {found} platform(s). Building profile...{img_msg}'})}\n\n"
 
-        clean = hypothesis_raw.strip()
-        if clean.startswith("```"):
-            clean = clean.split("\n", 1)[1]
-        if clean.endswith("```"):
-            clean = clean.rsplit("```", 1)[0]
-        clean = clean.strip()
+            # STEP 2 - HYPOTHESIS
+            yield f"data: {json.dumps({'agent': 'HYPOTHESIS', 'message': 'Analyzing patterns and generating theories...'})}\n\n"
+            hypothesis_raw = run_hypothesis_agent({**recon, "username": text})
 
-        with open("backend/agents/JsonOutputs/hypothesis.json", "w") as f:
-            f.write(clean)
+            clean = hypothesis_raw.strip()
+            if clean.startswith("```"):
+                clean = clean.split("\n", 1)[1]
+            if clean.endswith("```"):
+                clean = clean.rsplit("```", 1)[0]
+            clean = clean.strip()
 
-        hypothesis = json.loads(clean)
-        yield f"data: {json.dumps({'agent': 'HYPOTHESIS', 'message': 'Hypotheses generated. Writing brief...'})}\n\n"
+            with open(os.path.join(JSON_DIR, "hypothesis.json"), "w") as f:
+                f.write(clean)
 
-        # STEP 3 - BRIEF
-        yield f"data: {json.dumps({'agent': 'BRIEF', 'message': 'Compiling intelligence dossier...'})}\n\n"
-        brief_raw = run_brief_agent(hypothesis)
+            hypothesis = json.loads(clean)
+            yield f"data: {json.dumps({'agent': 'HYPOTHESIS', 'message': 'Hypotheses generated. Writing brief...'})}\n\n"
 
-        clean_brief = brief_raw.strip()
-        if clean_brief.startswith("```"):
-            clean_brief = clean_brief.split("\n", 1)[1]
-        if clean_brief.endswith("```"):
-            clean_brief = clean_brief.rsplit("```", 1)[0]
-        clean_brief = clean_brief.strip()
+            # STEP 3 - BRIEF
+            yield f"data: {json.dumps({'agent': 'BRIEF', 'message': 'Compiling intelligence dossier...'})}\n\n"
+            brief_raw = run_brief_agent(hypothesis)
 
-        with open("backend/agents/JsonOutputs/brief.json", "w") as f:
-            f.write(clean_brief)
+            clean_brief = brief_raw.strip()
+            if clean_brief.startswith("```"):
+                clean_brief = clean_brief.split("\n", 1)[1]
+            if clean_brief.endswith("```"):
+                clean_brief = clean_brief.rsplit("```", 1)[0]
+            clean_brief = clean_brief.strip()
 
-        brief = json.loads(clean_brief)
-        yield f"data: {json.dumps({'agent': 'COMPLETE', 'message': 'Report ready.', 'report': brief})}\n\n"
+            with open(os.path.join(JSON_DIR, "brief.json"), "w") as f:
+                f.write(clean_brief)
+
+            brief = json.loads(clean_brief)
+            yield f"data: {json.dumps({'agent': 'COMPLETE', 'message': 'Report ready.', 'report': brief})}\n\n"
+
+        except Exception as e:
+            yield f"data: {json.dumps({'agent': 'ERROR', 'message': str(e)})}\n\n"
+
+        finally:
+            if image_path and os.path.exists(image_path):
+                os.unlink(image_path)
 
     return Response(generate(), mimetype="text/event-stream")
 

@@ -173,3 +173,44 @@ textarea:focus {
   border-radius: 6px;
   cursor: pointer;
 }
+
+.report {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.report-header {
+  color: #ff4444;
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.report-section {
+  border-left: 2px solid rgba(0, 255, 200, 0.3);
+  padding-left: 12px;
+  margin-bottom: 16px;
+}
+
+.report-section.analyst {
+  border-left-color: rgba(255, 200, 0, 0.4);
+}
+
+.section-title {
+  color: #00ffc8;
+  font-size: 11px;
+  letter-spacing: 3px;
+  margin-bottom: 6px;
+  opacity: 0.8;
+}
+
+.label {
+  color: #00ffc8;
+  opacity: 0.7;
+}
+
+.summary {
+  opacity: 0.85;
+  margin-top: 4px;
+}

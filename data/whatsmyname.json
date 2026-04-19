@@ -60,19 +60,6 @@
       "cat": "social"
     },
     {
-      "name": "247CTF",
-      "uri_check": "https://247ctf.com/progress/{account}",
-      "e_code": 200,
-      "e_string": "property=\"og:url\"",
-      "m_string": "<h1>Redirecting...</h1>",
-      "m_code": 302,
-      "known": [
-        "pottm",
-        "jusb3"
-      ],
-      "cat": "tech"
-    },
-    {
       "name": "247sports",
       "uri_check": "https://247sports.com/User/{account}/",
       "e_code": 200,
@@ -175,45 +162,6 @@
         "greg"
       ],
       "cat": "coding"
-    },
-    {
-      "name": "AdmireMe.VIP",
-      "uri_check": "https://admireme.vip/{account}/",
-      "e_code": 200,
-      "e_string": "creator-stat subscriber",
-      "m_string": "<title>Page Not Found |",
-      "m_code": 404,
-      "known": [
-        "justjessicarabbit",
-        "savannah250xo"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
-      "name": "Adult_Forum",
-      "uri_check": "https://adultforum.gr/{account}-glamour-escorts/",
-      "e_code": 200,
-      "e_string": "Glamour Escorts ",
-      "m_string": "Page not found - Adult Forum Gr",
-      "m_code": 404,
-      "known": [
-        "nastya3",
-        "ekaterina"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
-      "name": "adultism",
-      "uri_check": "https://www.adultism.com/profile/{account}",
-      "e_code": 200,
-      "e_string": "Last login:",
-      "m_string": "<title> Not Found",
-      "m_code": 404,
-      "known": [
-        "laura",
-        "sara"
-      ],
-      "cat": "xx NSFW xx"
     },
     {
       "name": "ADVFN",
@@ -519,19 +467,6 @@
       "cat": "gaming"
     },
     {
-      "name": "Arsmate",
-      "uri_check": "https://arsmate.com/{account}",
-      "e_code": 200,
-      "e_string": "far fa-user-circle mr-1",
-      "m_string": "error-link mt-5",
-      "m_code": 404,
-      "known": [
-        "Angelic",
-        "Vardoc"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
       "name": "ArtBreeder",
       "uri_check": "https://www.artbreeder.com/{account}",
       "e_code": 200,
@@ -642,19 +577,6 @@
       "cat": "music"
     },
     {
-      "name": "babepedia",
-      "uri_check": "https://www.babepedia.com/user/{account}",
-      "e_code": 200,
-      "e_string": "'s Page</title>",
-      "m_string": "Profile not found",
-      "m_code": 404,
-      "known": [
-        "cherry",
-        "betty"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
       "name": "BabyPips",
       "uri_check": "https://forums.babypips.com/u/{account}.json",
       "uri_pretty": "https://forums.babypips.com/u/{account}/summary",
@@ -709,33 +631,6 @@
       "cat": "misc"
     },
     {
-      "name": "BDSMLR",
-      "uri_check": "https://{account}.bdsmlr.com",
-      "strip_bad_char": ".",
-      "e_code": 200,
-      "e_string": "login",
-      "m_string": "This blog doesn't exist.",
-      "m_code": 200,
-      "known": [
-        "themunch",
-        "shibari4all"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
-      "name": "bdsmsingles",
-      "uri_check": "https://www.bdsmsingles.com/members/{account}/",
-      "e_code": 200,
-      "e_string": "<title>Profile",
-      "m_string": "BDSM Singles",
-      "m_code": 302,
-      "known": [
-        "GoddessBlueDiamo",
-        "aalama"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
       "name": "Beacons",
       "uri_check": "https://beacons.ai/{account}",
       "e_code": 200,
@@ -751,20 +646,6 @@
       "protection": [
         "cloudflare"
       ]
-    },
-    {
-      "name": "Bentbox",
-      "uri_check": "https://bentbox.co/{account}",
-      "e_code": 200,
-      "e_string": "<div id=\"user_bar\">",
-      "m_string": "This user is currently not available",
-      "m_code": 200,
-      "known": [
-        "brockdoom",
-        "witchhouse",
-        "hotoptics"
-      ],
-      "cat": "xx NSFW xx"
     },
     {
       "name": "Bento",
@@ -995,19 +876,6 @@
         "mike"
       ],
       "cat": "health"
-    },
-    {
-      "name": "bonga_cams",
-      "uri_check": "https://pt.bongacams.com/{account}",
-      "e_code": 200,
-      "e_string": "Chat público ao vivo de",
-      "m_string": "Câmaras de sexo free: chat pornô ao vivo",
-      "m_code": 404,
-      "known": [
-        "prettykatea",
-        "milaowens"
-      ],
-      "cat": "xx NSFW xx"
     },
     {
       "name": "Bookcrossing",
@@ -1327,19 +1195,6 @@
       "cat": "social"
     },
     {
-      "name": "chaturbate",
-      "uri_check": "https://chaturbate.com/{account}/",
-      "e_code": 200,
-      "e_string": "'s Bio and Free Webcam",
-      "m_string": "It's probably just a broken link",
-      "m_code": 404,
-      "known": [
-        "pussylovekate",
-        "kemii"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
       "name": "cHEEZburger",
       "uri_check": "https://profile.cheezburger.com/{account}",
       "e_code": 200,
@@ -1399,19 +1254,6 @@
         "test2"
       ],
       "cat": "misc"
-    },
-    {
-      "name": "Chyoa",
-      "uri_check": "https://chyoa.com/user/{account}",
-      "e_code": 200,
-      "e_string": "When I'm not reading erotica I like to read",
-      "m_string": "Sorry, I got distracted...",
-      "m_code": 404,
-      "known": [
-        "joe",
-        "carlos01"
-      ],
-      "cat": "xx NSFW xx"
     },
     {
       "name": "Cloudflare",
@@ -1665,19 +1507,6 @@
       "cat": "social"
     },
     {
-      "name": "cowboys4angels",
-      "uri_check": "https://cowboys4angels.com/cowboy/{account}/",
-      "e_code": 200,
-      "e_string": " - Cowboys 4 Angels</title>",
-      "m_string": "Error Page not found",
-      "m_code": 404,
-      "known": [
-        "jaxjames",
-        "jordan-2"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
       "name": "Cracked",
       "uri_check": "https://www.cracked.com/members/{account}",
       "e_code": 200,
@@ -1795,19 +1624,6 @@
         "janeferater"
       ],
       "cat": "dating"
-    },
-    {
-      "name": "datezone",
-      "uri_check": "https://www.datezone.com/users/{account}/",
-      "e_code": 200,
-      "e_string": "profile_status",
-      "m_string": "404: page not found",
-      "m_code": 200,
-      "known": [
-        "maniektwist",
-        "carllos"
-      ],
-      "cat": "xx NSFW xx"
     },
     {
       "name": "Dating.ru",
@@ -2404,24 +2220,6 @@
       "cat": "tech"
     },
     {
-      "name": "EPORNER",
-      "uri_check": "https://www.eporner.com/xhr/check/",
-      "uri_pretty": "https://www.eporner.com/profile/{account}/",
-      "post_body": "xhr=1&act=check_login&login={account}",
-      "headers": {
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-      },
-      "e_code": 200,
-      "e_string": "\"msg_body\":\"This login already exists. Choose another one\"",
-      "m_string": "\"msg_body\":\"Available\"",
-      "m_code": 200,
-      "known": [
-        "LAM_2030",
-        "DianaX814"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
       "name": "Etoro",
       "uri_check": "https://www.etoro.com/api/logininfo/v1.1/users/{account}",
       "uri_pretty": "https://www.etoro.com/people/{account}",
@@ -2546,20 +2344,6 @@
       "cat": "images"
     },
     {
-      "name": "FanCentro",
-      "uri_check": "https://fancentro.com/api/profile.get?profileAlias={account}&limit=1",
-      "uri_pretty": "https://fancentro.com/{account}/",
-      "e_code": 200,
-      "e_string": "\"status\":true",
-      "m_string": "\"status\":false",
-      "m_code": 200,
-      "known": [
-        "medroxy",
-        "miaaamador"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
       "name": "Fandom",
       "uri_check": "https://www.fandom.com/u/{account}",
       "e_code": 200,
@@ -2584,37 +2368,6 @@
         "johndoe"
       ],
       "cat": "social"
-    },
-    {
-      "name": "Fanslist (OnlyFans)",
-      "uri_check": "https://fanslist.com/search?q={account}",
-      "uri_pretty": "https://onlyfans.com/{account}",
-      "e_code": 200,
-      "e_string": "data-username=",
-      "m_string": "No results found for query",
-      "m_code": 200,
-      "known": [
-        "mirasong",
-        "milaamour"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
-      "name": "Fansly",
-      "uri_check": "https://apiv3.fansly.com/api/v1/account?usernames={account}",
-      "uri_pretty": "https://fansly.com/{account}/posts",
-      "e_code": 200,
-      "e_string": "\"id\":",
-      "m_string": "\"response\":[]",
-      "m_code": 200,
-      "known": [
-        "Mikomin",
-        "magicalgirlbuny"
-      ],
-      "cat": "xx NSFW xx",
-      "protection": [
-        "cloudfront"
-      ]
     },
     {
       "name": "Fark",
@@ -3849,19 +3602,6 @@
       "cat": "finance"
     },
     {
-      "name": "Hanime",
-      "uri_check": "https://hanime.tv/channels/{account}",
-      "e_code": 200,
-      "e_string": "Channel Views",
-      "m_string": "DYNAMIC",
-      "m_code": 302,
-      "known": [
-        "thecolorred-7902",
-        "arisu-cum-stats-2787"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
       "name": "Hashnode",
       "uri_check": "https://gql.hashnode.com/",
       "uri_pretty": "https://hashnode.com/@{account}",
@@ -4163,19 +3903,6 @@
       "cat": "social"
     },
     {
-      "name": "imagefap",
-      "uri_check": "https://www.imagefap.com/profile/{account}",
-      "e_code": 200,
-      "e_string": "s Profile",
-      "m_string": "Invalid uid",
-      "m_code": 200,
-      "known": [
-        "lover03",
-        "SecretSide15"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
       "name": "ImageShack",
       "uri_check": "https://imageshack.com/user/{account}",
       "e_code": 200,
@@ -4241,19 +3968,6 @@
         "LiamM"
       ],
       "cat": "hobby"
-    },
-    {
-      "name": "InkBunny",
-      "uri_check": "https://inkbunny.net/{account}",
-      "e_code": 200,
-      "e_string": "Profile | Inkbunny, the Furry Art Community</title>",
-      "m_string": "<title>Members | Inkbunny, the Furry Art Community</title>",
-      "m_code": 302,
-      "known": [
-        "AdminBunny",
-        "test"
-      ],
-      "cat": "xx NSFW xx"
     },
     {
       "name": "InsaneJournal",
@@ -4501,19 +4215,6 @@
         "alex"
       ],
       "cat": "coding"
-    },
-    {
-      "name": "Justforfans",
-      "uri_check": "https://justfor.fans/{account}",
-      "e_code": 200,
-      "e_string": " @ JustFor.Fans",
-      "m_string": "",
-      "m_code": 302,
-      "known": [
-        "devinfrancoxxx",
-        "RileyChaux"
-      ],
-      "cat": "xx NSFW xx"
     },
     {
       "name": "Kaggle",
@@ -5706,19 +5407,6 @@
       "cat": "music"
     },
     {
-      "name": "MUYZORRAS",
-      "uri_check": "https://www.muyzorras.com/usuarios/{account}",
-      "e_code": 200,
-      "e_string": "og:title",
-      "m_string": "<title>Error 404",
-      "m_code": 404,
-      "known": [
-        "anuel",
-        "esteban"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
       "name": "my_instants",
       "uri_check": "https://www.myinstants.com/en/profile/{account}/",
       "e_code": 200,
@@ -6789,45 +6477,6 @@
       "cat": "business"
     },
     {
-      "name": "Pornhub (Model)",
-      "uri_check": "https://www.pornhub.com/model/{account}",
-      "e_code": 200,
-      "e_string": "class=\"topProfileHeader\"",
-      "m_string": "",
-      "m_code": 301,
-      "known": [
-        "sexyc4u",
-        "desadelegacy"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
-      "name": "Pornhub (Pornstar)",
-      "uri_check": "https://www.pornhub.com/pornstar/{account}",
-      "e_code": 200,
-      "e_string": "class=\"topProfileHeader\"",
-      "m_string": "",
-      "m_code": 301,
-      "known": [
-        "riley-reid",
-        "dani-daniels"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
-      "name": "Pornhub (User)",
-      "uri_check": "https://www.pornhub.com/users/{account}",
-      "e_code": 200,
-      "e_string": "id=\"topProfileHeader\"",
-      "m_string": "<title>Page Not Found</title>",
-      "m_code": 404,
-      "known": [
-        "viannabi",
-        "zayed_home"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
       "name": "Poshmark",
       "uri_check": "https://poshmark.com/closet/{account}",
       "e_code": 200,
@@ -7145,20 +6794,6 @@
         "alabasterheart"
       ],
       "cat": "social"
-    },
-    {
-      "name": "RedGIFs",
-      "uri_check": "https://api.redgifs.com/v1/users/{account}",
-      "uri_pretty": "https://www.redgifs.com/users/{account}",
-      "e_code": 200,
-      "e_string": "\"name\":",
-      "m_string": "\"status\":404",
-      "m_code": 404,
-      "known": [
-        "alexbreecooper",
-        "Jose-Roberto-Rasi"
-      ],
-      "cat": "xx NSFW xx"
     },
     {
       "name": "Refsheet",
@@ -7494,19 +7129,6 @@
       "cat": "social"
     },
     {
-      "name": "Seneporno",
-      "uri_check": "https://seneporno.com/user/{account}",
-      "e_code": 200,
-      "e_string": "Dernier Login",
-      "m_string": "Unexpected error! Please contact us and tell us more how you got to this page!",
-      "m_code": 301,
-      "known": [
-        "Kalsobbc",
-        "Boymariste"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
       "name": "sentimente",
       "uri_check": "https://www.sentimente.com/amp/{account}.html",
       "e_code": 200,
@@ -7559,19 +7181,6 @@
       "cat": "health"
     },
     {
-      "name": "Shesfreaky",
-      "uri_check": "https://www.shesfreaky.com/profile/{account}/",
-      "e_code": 200,
-      "e_string": "s Profile - ShesFreaky</title>",
-      "m_string": "",
-      "m_code": 302,
-      "known": [
-        "tata23",
-        "fitzsta"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
       "name": "shopify",
       "uri_check": "https://{account}.myshopify.com",
       "strip_bad_char": ".",
@@ -7584,22 +7193,6 @@
         "daniel"
       ],
       "cat": "shopping"
-    },
-    {
-      "name": "Showup.tv",
-      "uri_check": "https://showup.tv/profile/{account}",
-      "headers": {
-        "Cookie": "accept_rules=true;"
-      },
-      "e_code": 200,
-      "e_string": "O mnie",
-      "m_string": "<title>Darmowe",
-      "m_code": 404,
-      "known": [
-        "LunaVee",
-        "Jane_Frou"
-      ],
-      "cat": "xx NSFW xx"
     },
     {
       "name": "shutterstock",
@@ -7640,19 +7233,6 @@
         "sime064"
       ],
       "cat": "art"
-    },
-    {
-      "name": "SlackHoles",
-      "uri_check": "https://slackholes.com/actor/{account}/",
-      "e_code": 200,
-      "e_string": "Pussy and Ass Sizes",
-      "m_string": "It looks like nothing was found at this location",
-      "m_code": 404,
-      "known": [
-        "alexbreecooper",
-        "roxy-raye"
-      ],
-      "cat": "xx NSFW xx"
     },
     {
       "name": "slant",
@@ -8131,33 +7711,6 @@
       "cat": "finance"
     },
     {
-      "name": "Stripchat",
-      "uri_check": "https://stripchat.com/api/front/users/checkUsername?username={account}",
-      "uri_pretty": "https://stripchat.com/{account}",
-      "e_code": 400,
-      "e_string": "\"error\":\"This username already exists\"",
-      "m_string": "[]",
-      "m_code": 200,
-      "known": [
-        "DulcieRichard",
-        "Katie-Mili"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
-      "name": "Subscribestar",
-      "uri_check": "https://subscribestar.adult/{account}",
-      "e_code": 200,
-      "e_string": "CREATOR STATS",
-      "m_string": "WE ARE SORRY, THE PAGE YOU REQUESTED CANNOT BE FOUND",
-      "m_code": 404,
-      "known": [
-        "missmoonified",
-        "honey"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
       "name": "Substack",
       "uri_check": "https://substack.com/@{account}",
       "e_code": 200,
@@ -8169,19 +7722,6 @@
         "janeclairebradley"
       ],
       "cat": "social"
-    },
-    {
-      "name": "sukebei.nyaa.si",
-      "uri_check": "https://sukebei.nyaa.si/user/{account}",
-      "e_code": 200,
-      "e_string": "'s torrents",
-      "m_string": "404 Not Found",
-      "m_code": 404,
-      "known": [
-        "kouhy76",
-        "Rektr0"
-      ],
-      "cat": "xx NSFW xx"
     },
     {
       "name": "Suzuri",
@@ -8768,19 +8308,6 @@
       "cat": "tech"
     },
     {
-      "name": "Tryst",
-      "uri_check": "https://tryst.link/escort/{account}",
-      "e_code": 200,
-      "e_string": "Caters to</div>",
-      "m_string": "<title>Page not found",
-      "m_code": 404,
-      "known": [
-        "lpatterson32",
-        "kansasgirl69"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
       "name": "tumblr",
       "uri_check": "https://{account}.tumblr.com",
       "strip_bad_char": ".",
@@ -9348,33 +8875,6 @@
       "cat": "hobby"
     },
     {
-      "name": "watchmemore.com",
-      "uri_check": "https://api.watchmemore.com/api4/profile/{account}/",
-      "uri_pretty": "https://watchmemore.com/{account}/",
-      "e_code": 200,
-      "e_string": "displayName",
-      "m_string": "notExists",
-      "m_code": 400,
-      "known": [
-        "medroxy",
-        "nodjev"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
-      "name": "Watchmyfeed",
-      "uri_check": "https://watchmyfeed.com/{account}",
-      "e_code": 200,
-      "e_string": "SEND ME A TIP",
-      "m_string": "",
-      "m_code": 302,
-      "known": [
-        "jennifer-ann",
-        "shay-loveless"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
       "name": "Wattpad",
       "uri_check": "https://www.wattpad.com/api/v3/users/{account}",
       "uri_pretty": "https://www.wattpad.com/user/{account}",
@@ -9749,19 +9249,6 @@
       "cat": "gaming"
     },
     {
-      "name": "xHamster",
-      "uri_check": "https://xhamster.com/users/{account}",
-      "e_code": 200,
-      "e_string": "s profile | xHamster</title>",
-      "m_string": "User not found</title>",
-      "m_code": 404,
-      "known": [
-        "john",
-        "tonystark85"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
       "name": "Xing",
       "uri_check": "https://www.xing.com/profile/{account}",
       "e_code": 200,
@@ -9773,34 +9260,6 @@
         "Stephan_Abele2"
       ],
       "cat": "social"
-    },
-    {
-      "name": "XNXX",
-      "uri_check": "https://www.xnxx.com/mobile/profile/{account}",
-      "e_code": 200,
-      "e_string": "<table id=\"profile\">",
-      "m_string": "<title>Bad request",
-      "m_code": 400,
-      "known": [
-        "john",
-        "mumrra"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
-      "name": "XVideos",
-      "uri_check": "https://www.xvideos.com/profiles/{account}/feed/",
-      "uri_pretty": "https://www.xvideos.com/profiles/{account}",
-      "e_code": 200,
-      "e_string": "\"result\":true",
-      "m_string": "\"message\":\"Unknown user\"",
-      "m_code": 404,
-      "known": [
-        "nympho-nailer",
-        "vvalencourt3",
-        "lia-lin"
-      ],
-      "cat": "xx NSFW xx"
     },
     {
       "name": "Yahoo! JAPAN Auction",
@@ -9924,22 +9383,6 @@
       "cat": "video"
     },
     {
-      "name": "Zbiornik",
-      "uri_check": "https://mini.zbiornik.com/{account}",
-      "headers": {
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:133.0) Gecko/20100101 Firefox/133.0"
-      },
-      "e_code": 200,
-      "e_string": "INFO",
-      "m_string": "",
-      "m_code": 301,
-      "known": [
-        "69uzytkownik69",
-        "Soif"
-      ],
-      "cat": "xx NSFW xx"
-    },
-    {
       "name": "Zenn",
       "uri_check": "https://zenn.dev/{account}",
       "e_code": 200,
@@ -9992,19 +9435,6 @@
         "Maggie-Alegria"
       ],
       "cat": "shopping"
-    },
-    {
-      "name": "zmarsa.com",
-      "uri_check": "https://zmarsa.com/uzytkownik/{account}",
-      "e_code": 200,
-      "e_string": "Statystyki",
-      "m_string": "<title>Error 404 - zMarsa.com<",
-      "m_code": 404,
-      "known": [
-        "janek",
-        "test"
-      ],
-      "cat": "xx NSFW xx"
     },
     {
       "name": "Znanija",

@@ -440,9 +440,9 @@ textarea::placeholder { color: var(--text-dim); }
 }
 
 .preview-chip img {
-  width: 16px;
-  height: 16px;
-  border-radius: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
   object-fit: cover;
 }
 
@@ -567,25 +567,10 @@ textarea::placeholder { color: var(--text-dim); }
   transition: width 0.8s ease;
 }
 
-.confidence-fill.overall { background: linear-gradient(90deg, var(--accent), #fff); }
-
-.conf-pct {
-  font-size: 10px;
-  color: var(--text-dim);
-  min-width: 28px;
-  text-align: right;
-}
-
-/* ─── RESPONSIVE ─────────────────────────────────────── */
-@media (max-width: 680px) {
-  .sidebar {
-    position: fixed;
-    left: 0; top: 0; bottom: 0;
-    transform: translateX(-100%);
-  }
-  .sidebar.open {
-    transform: translateX(0);
-    box-shadow: 4px 0 20px rgba(0,0,0,0.4);
-  }
-  .sidebar-toggle { display: flex; }
-}
+/* HIGH / MED / LOW color coding */
+.c-value.high { color: #00ffc8; }
+.c-value.mid  { color: #ffc84a; }
+.c-value.low  { color: #ff6b6b; }
+.c-fill.high  { background: #00ffc8; }
+.c-fill.mid   { background: #ffc84a; }
+.c-fill.low   { background: #ff6b6b; }

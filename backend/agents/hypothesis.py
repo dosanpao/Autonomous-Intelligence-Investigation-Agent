@@ -11,7 +11,7 @@ load_dotenv()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 RECON_PATH = os.path.join(BASE_DIR, "JsonOutputs", "recon.json")
 
-# -----------------------------
+#  -----------------------------
 # Gemini Client (NEW SDK)
 # -----------------------------
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))

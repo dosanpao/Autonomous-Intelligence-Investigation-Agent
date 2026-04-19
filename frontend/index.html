@@ -10,53 +10,275 @@
 
   <div class="app">
 
-    <!-- HEADER -->
-    <header class="header">
-      <h1>SIGMA</h1>
-      <p class="subtitle">Strategic Intelligence & Graph Metadata Analyzer</p>
-    </header>
-
-    <!-- CHAT -->
-    <main class="chat-container" id="chatContainer">
-      <div class="welcome">
-        <p>Enter a target to begin investigation.</p>
-        <span class="hint">username • image • url</span>
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-title">INVESTIGATIONS</span>
+        <button class="sidebar-new" id="newChatBtn" title="New investigation">+</button>
       </div>
-    </main>
+      <div class="sidebar-list" id="historyList"></div>
+    </aside>
 
-    <!-- INPUT -->
-    <div class="input-container">
+    <!-- MAIN -->
+    <div class="main">
 
-      <button class="upload-btn" id="uploadBtn">+</button>
-      <input type="file" id="fileInput" accept="image/*" hidden />
+      <!-- HEADER -->
+      <header class="header">
+        <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+        <div class="header-center">
+          <h1>SIGMA</h1>
+          <p class="subtitle">Strategic Intelligence & Graph Metadata Analyzer</p>
+        </div>
+        <div class="header-right"></div>
+      </header>
 
-      <div class="input-wrapper">
-        <textarea
-          id="userInput"
-          placeholder="Type a username, URL, or describe an image..."
-          rows="1"
-        ></textarea>
+      <!-- CHAT -->
+      <main class="chat-container" id="chatContainer">
+        <div class="welcome" id="welcomeMsg">
+          <div class="welcome-logo">⬡</div>
+          <p>Enter a target to begin investigation.</p>
+          <span class="hint">username • image • url</span>
+        </div>
+      </main>
 
-        <!-- IMAGE CHIP PREVIEW -->
-        <div id="imagePreview" class="image-preview"></div>
+      <!-- INPUT -->
+      <div class="input-area">
+        <div class="input-box" id="inputBox">
+
+          <!-- TOP: textarea -->
+          <div class="input-top">
+            <textarea
+              id="userInput"
+              placeholder="Type a username, URL, or upload an image..."
+              rows="1"
+            ></textarea>
+          </div>
+
+          <!-- BOTTOM: controls -->
+          <div class="input-bottom">
+            <div class="input-left-controls">
+              <button class="ctrl-btn" id="uploadBtn" title="Attach image">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+              </button>
+              <input type="file" id="fileInput" accept="image/*" hidden />
+              <div id="imagePreview" class="image-preview"></div>
+            </div>
+            <button class="send-btn" id="sendBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+
+        </div>
+        <p class="input-hint">Press Enter to send · Shift+Enter for new line</p>
       </div>
-
-      <button class="send-btn" id="sendBtn">→</button>
 
     </div>
-
   </div>
 
   <script>
+    // ─── STATE ───────────────────────────────────────────────
+    let sessions = JSON.parse(localStorage.getItem("sigma_sessions") || "[]");
+    let currentSessionId = null;
+    let selectedFile = null;
+
+    // ─── ELEMENTS ─────────────────────────────────────────────
     const uploadBtn = document.getElementById("uploadBtn");
     const fileInput = document.getElementById("fileInput");
     const sendBtn = document.getElementById("sendBtn");
     const userInput = document.getElementById("userInput");
     const chatContainer = document.getElementById("chatContainer");
     const imagePreview = document.getElementById("imagePreview");
+    const historyList = document.getElementById("historyList");
+    const newChatBtn = document.getElementById("newChatBtn");
+    const sidebarToggle = document.getElementById("sidebarToggle");
+    const sidebar = document.getElementById("sidebar");
 
-    let selectedFile = null;
+    // ─── SIDEBAR TOGGLE ───────────────────────────────────────
+    sidebarToggle.onclick = () => sidebar.classList.toggle("open");
 
+    // ─── SESSION MANAGEMENT ───────────────────────────────────
+    function createSession(label) {
+      const id = Date.now().toString();
+      const session = { id, label, messages: [] };
+      sessions.unshift(session);
+      saveSessions();
+      return session;
+    }
+
+    function saveSessions() {
+      localStorage.setItem("sigma_sessions", JSON.stringify(sessions));
+    }
+
+    function renderHistory() {
+      historyList.innerHTML = "";
+      sessions.forEach(s => {
+        const item = document.createElement("div");
+        item.className = "history-item" + (s.id === currentSessionId ? " active" : "");
+        item.innerHTML = `
+          <span class="history-label">${s.label}</span>
+          <button class="history-delete" data-id="${s.id}" title="Delete">✕</button>
+        `;
+        item.onclick = (e) => {
+          if (e.target.classList.contains("history-delete")) {
+            sessions = sessions.filter(x => x.id !== s.id);
+            saveSessions();
+            if (currentSessionId === s.id) startNewChat();
+            else renderHistory();
+            return;
+          }
+          loadSession(s.id);
+        };
+        historyList.appendChild(item);
+      });
+    }
+
+    function loadSession(id) {
+      currentSessionId = id;
+      const session = sessions.find(s => s.id === id);
+      chatContainer.innerHTML = "";
+      session.messages.forEach(m => {
+        if (m.role === "user") appendUserMessage(m.text, false);
+        else if (m.role === "agent") appendAgentLog(m.text, false);
+        else if (m.role === "report") appendReport(m.data, false);
+      });
+      renderHistory();
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function startNewChat() {
+      currentSessionId = null;
+      chatContainer.innerHTML = `
+        <div class="welcome" id="welcomeMsg">
+          <div class="welcome-logo">⬡</div>
+          <p>Enter a target to begin investigation.</p>
+          <span class="hint">username • image • url</span>
+        </div>
+      `;
+      renderHistory();
+    }
+
+    newChatBtn.onclick = startNewChat;
+
+    // ─── MESSAGE RENDERERS ────────────────────────────────────
+    function appendUserMessage(text, save = true) {
+      const welcome = document.getElementById("welcomeMsg");
+      if (welcome) welcome.remove();
+
+      const row = document.createElement("div");
+      row.className = "msg-row user-row";
+      row.innerHTML = `
+        <div class="message user">${text}</div>
+        <div class="avatar user-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+          </svg>
+        </div>
+      `;
+      chatContainer.appendChild(row);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+
+      if (save && currentSessionId) {
+        const s = sessions.find(x => x.id === currentSessionId);
+        if (s) { s.messages.push({ role: "user", text }); saveSessions(); }
+      }
+      return row;
+    }
+
+    function appendAgentLog(text, save = true) {
+      let el = chatContainer.querySelector(".agent-log-active");
+      if (!el) {
+        const row = document.createElement("div");
+        row.className = "msg-row agent-row";
+        row.innerHTML = `
+          <div class="avatar sigma-avatar">Σ</div>
+          <div class="message assistant agent-log-active"></div>
+        `;
+        chatContainer.appendChild(row);
+        el = row.querySelector(".agent-log-active");
+      }
+      el.textContent = text;
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+      return el;
+    }
+
+    function finalizeAgentLog(el, text) {
+      el.classList.remove("agent-log-active");
+      if (currentSessionId) {
+        const s = sessions.find(x => x.id === currentSessionId);
+        if (s) { s.messages.push({ role: "agent", text }); saveSessions(); }
+      }
+    }
+
+    function appendReport(report, save = true) {
+      const row = document.createElement("div");
+      row.className = "msg-row agent-row";
+      row.innerHTML = `
+        <div class="avatar sigma-avatar">Σ</div>
+        <div class="message assistant">${buildReportHTML(report)}</div>
+      `;
+      chatContainer.appendChild(row);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+
+      if (save && currentSessionId) {
+        const s = sessions.find(x => x.id === currentSessionId);
+        if (s) { s.messages.push({ role: "report", data: report }); saveSessions(); }
+      }
+    }
+
+    function buildReportHTML(report) {
+      return `
+        <div class="report">
+          <div class="report-header">
+            <span class="report-badge">CLASSIFIED</span>
+            ${report.classification}
+          </div>
+          <div class="report-grid">
+            <div class="report-section">
+              <div class="section-title">▸ SUBJECT PROFILE</div>
+              <div class="field"><span class="label">Name</span><span>${report.subject_profile.likely_name || "UNKNOWN"}</span></div>
+              <div class="field"><span class="label">Username</span><span>${report.subject_profile.username}</span></div>
+              <div class="summary">${report.subject_profile.summary}</div>
+            </div>
+            <div class="report-section">
+              <div class="section-title">▸ DIGITAL FOOTPRINT</div>
+              <div class="field"><span class="label">Confirmed</span><span>${(report.digital_footprint.platforms_confirmed || []).join(", ") || "none"}</span></div>
+              <div class="summary">${report.digital_footprint.summary}</div>
+            </div>
+            <div class="report-section">
+              <div class="section-title">▸ LOCATION ESTIMATE</div>
+              <div class="field"><span class="label">Region</span><span>${report.location_estimate.region}</span></div>
+              <div class="confidence-bar-wrap">
+                <span class="label">Confidence</span>
+                <div class="confidence-bar"><div class="confidence-fill" style="width:${(report.location_estimate.confidence * 100).toFixed(0)}%"></div></div>
+                <span class="conf-pct">${(report.location_estimate.confidence * 100).toFixed(0)}%</span>
+              </div>
+              <div class="summary">${report.location_estimate.reasoning}</div>
+            </div>
+            <div class="report-section">
+              <div class="section-title">▸ BEHAVIORAL ANALYSIS</div>
+              <div class="summary">${report.behavioral_analysis.summary}</div>
+            </div>
+            <div class="report-section metrics-section">
+              <div class="section-title">▸ CONFIDENCE METRICS</div>
+              ${["identity","location","occupation","overall"].map(k => `
+                <div class="metric-row">
+                  <span class="metric-label">${k}</span>
+                  <div class="confidence-bar"><div class="confidence-fill ${k === 'overall' ? 'overall' : ''}" style="width:${(report.confidence_metrics[k] * 100).toFixed(0)}%"></div></div>
+                  <span class="conf-pct">${(report.confidence_metrics[k] * 100).toFixed(0)}%</span>
+                </div>
+              `).join("")}
+            </div>
+            <div class="report-section analyst-section">
+              <div class="section-title">▸ ANALYST NOTE</div>
+              <div class="summary analyst-text">${report.analyst_note}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ─── FILE UPLOAD ──────────────────────────────────────────
     uploadBtn.onclick = () => fileInput.click();
 
     fileInput.addEventListener("change", () => {
@@ -83,24 +305,22 @@
       imagePreview.appendChild(chip);
     });
 
+    // ─── SEND ─────────────────────────────────────────────────
     sendBtn.onclick = async () => {
       const text = userInput.value.trim();
       if (!text && !selectedFile) return;
 
-      const welcome = document.querySelector(".welcome");
-      if (welcome) welcome.remove();
+      // create session if needed
+      if (!currentSessionId) {
+        const session = createSession(text.slice(0, 30) || "Image investigation");
+        currentSessionId = session.id;
+        renderHistory();
+      }
 
-      const userMsg = document.createElement("div");
-      userMsg.className = "message user";
-      const t = document.createElement("div");
-      t.textContent = text;
-      userMsg.appendChild(t);
-      chatContainer.appendChild(userMsg);
+      appendUserMessage(text);
 
-      const agentMsg = document.createElement("div");
-      agentMsg.className = "message assistant";
-      agentMsg.textContent = "[SIGMA] Starting investigation...";
-      chatContainer.appendChild(agentMsg);
+      const agentEl = appendAgentLog("[SIGMA] Starting investigation...");
+      let agentText = "[SIGMA] Starting investigation...";
 
       const formData = new FormData();
       formData.append("text", text);
@@ -122,57 +342,26 @@
             const data = JSON.parse(line.replace("data: ", ""));
 
             if (data.agent === "ERROR") {
-              agentMsg.textContent += `\n[ERROR] ${data.message}`;
+              agentText += `\n[ERROR] ${data.message}`;
+              appendAgentLog(agentText);
             } else if (data.agent !== "COMPLETE") {
-              agentMsg.textContent += `\n[${data.agent}] ${data.message}`;
+              agentText += `\n[${data.agent}] ${data.message}`;
+              appendAgentLog(agentText);
             } else {
-              const report = data.report;
-              agentMsg.innerHTML = `
-                <div class="report">
-                  <div class="report-header">⬛ ${report.classification}</div>
-                  <div class="report-section">
-                    <div class="section-title">SUBJECT PROFILE</div>
-                    <div><span class="label">Name:</span> ${report.subject_profile.likely_name || "UNKNOWN"}</div>
-                    <div><span class="label">Username:</span> ${report.subject_profile.username}</div>
-                    <div class="summary">${report.subject_profile.summary}</div>
-                  </div>
-                  <div class="report-section">
-                    <div class="section-title">DIGITAL FOOTPRINT</div>
-                    <div><span class="label">Confirmed:</span> ${report.digital_footprint.platforms_confirmed.join(", ") || "none"}</div>
-                    <div class="summary">${report.digital_footprint.summary}</div>
-                  </div>
-                  <div class="report-section">
-                    <div class="section-title">LOCATION ESTIMATE</div>
-                    <div><span class="label">Region:</span> ${report.location_estimate.region}</div>
-                    <div><span class="label">Confidence:</span> ${(report.location_estimate.confidence * 100).toFixed(0)}%</div>
-                    <div class="summary">${report.location_estimate.reasoning}</div>
-                  </div>
-                  <div class="report-section">
-                    <div class="section-title">BEHAVIORAL ANALYSIS</div>
-                    <div class="summary">${report.behavioral_analysis.summary}</div>
-                  </div>
-                  <div class="report-section">
-                    <div class="section-title">CONFIDENCE METRICS</div>
-                    <div><span class="label">Identity:</span> ${(report.confidence_metrics.identity * 100).toFixed(0)}%</div>
-                    <div><span class="label">Location:</span> ${(report.confidence_metrics.location * 100).toFixed(0)}%</div>
-                    <div><span class="label">Occupation:</span> ${(report.confidence_metrics.occupation * 100).toFixed(0)}%</div>
-                    <div><span class="label">Overall:</span> ${(report.confidence_metrics.overall * 100).toFixed(0)}%</div>
-                  </div>
-                  <div class="report-section analyst">
-                    <div class="section-title">ANALYST NOTE</div>
-                    <div class="summary">${report.analyst_note}</div>
-                  </div>
-                </div>
-              `;
+              finalizeAgentLog(agentEl, agentText);
+              appendReport(data.report);
             }
             chatContainer.scrollTop = chatContainer.scrollHeight;
           }
         }
       } catch (err) {
-        agentMsg.textContent = "Backend error: " + err.message;
+        agentEl.textContent = "Backend error: " + err.message;
+        agentEl.classList.remove("agent-log-active");
       }
 
       userInput.value = "";
+      userInput.style.height = "auto";
+      userInput.blur(); // dismiss keyboard
       selectedFile = null;
       fileInput.value = "";
       imagePreview.innerHTML = "";
@@ -184,6 +373,15 @@
         sendBtn.click();
       }
     });
+
+    // auto resize textarea
+    userInput.addEventListener("input", () => {
+      userInput.style.height = "auto";
+      userInput.style.height = Math.min(userInput.scrollHeight, 120) + "px";
+    });
+
+    // ─── INIT ─────────────────────────────────────────────────
+    renderHistory();
   </script>
 
 </body>
